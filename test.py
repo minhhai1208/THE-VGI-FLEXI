@@ -1,5 +1,25 @@
 import streamlit as st
 import pandas as pd
+import folium
+from streamlit_folium import st_folium
+from folium import plugins
+# Hide the menu and footer
+st.set_page_config(
+    page_title="Coordinate Map Viewer",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Hide streamlit style elements
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+.stDeployButton {display: none;}
+header {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 def main():
     st.title("📍 Coordinate Map Viewer")
@@ -37,9 +57,16 @@ def main():
         'lon': [longitude]
     })
     
+
     # Display the map
-    st.map(df)
+    m = folium.Map(location=[latitude, longitude], zoom_start=12)
+    folium.Marker(
+            [latitude, longitude],
+            popup=f"Lat: {latitude}<br>Lon: {longitude}",
+            tooltip="Click for coordinates"
+        ).add_to(m)
     
+    st_folium(m, width=800, height=600)
     # Add a link to open the location in Google Maps
     google_maps_url = f"https://www.google.com/maps?q={latitude},{longitude}"
     st.markdown(f"[Open in Google Maps]({google_maps_url})")
