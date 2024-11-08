@@ -1,6 +1,6 @@
 import streamlit as st
 import folium
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 
 def main():
     st.title("📍 Coordinate Map Viewer")
@@ -43,7 +43,8 @@ def main():
     ).add_to(m)
     
     # Display the map
-    folium_static(m)
+    
+    st_folium(m, width=700, height=500)
     
     # Add a link to open the location in Google Maps
     google_maps_url = f"https://www.google.com/maps?q={latitude},{longitude}"
