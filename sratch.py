@@ -1,11 +1,24 @@
-import numpy as np
+from geopy.geocoders import Nominatim
+import folium
 
-arr_2d = np.array([ [[10, 3, 5], 
-                    [7, 6, 1]] ,
-                    [[1,2,3],
-                     [4,5,6]]
-                    ])
-print(arr_2d.shape)
-index_of_min_along_axis_0 = np.argmin(arr_2d, axis=1) 
+# Initialize the geolocator with your app name
+geolocator = Nominatim(user_agent="geoapiExercises")
 
-print(index_of_min_along_axis_0)
+# Geocode an address
+location = geolocator.geocode("1600 Pennsylvania Ave NW, Washington, DC")
+
+# Print the location details
+print("Address:", location.address)
+print("Latitude:", location.latitude)
+print("Longitude:", location.longitude)
+
+# Create a map centered around the coordinates
+map = folium.Map(location=[location.latitude, location.longitude], zoom_start=15)
+
+# Add a marker for the location
+folium.Marker([location.latitude, location.longitude], popup=location.address).add_to(map)
+
+# Save the map to an HTML file
+map.save("location_map.html")
+
+# You can open the map in a browser or view it directly in Jupyter Notebook if using it

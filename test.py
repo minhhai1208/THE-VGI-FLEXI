@@ -1,37 +1,53 @@
 import streamlit as st
 import folium
-from geopy.geocoders import Nominatim
-from folium import IFrame
+from streamlit_folium import folium_static
 
-# Function to create map
-def create_map(latitude, longitude, address=""):
-    # Create a folium map centered around the coordinates
-    my_map = folium.Map(location=[latitude, longitude], zoom_start=12)
-
-    # Add a marker at the given coordinates with a popup
-    iframe = IFrame(f"<b>{address}</b>", width=200, height=100)
-    folium.Marker([latitude, longitude], popup=iframe).add_to(my_map)
+def main():
+    st.title("📍 Coordinate Map Viewer")
     
-    return my_map
+    # Create two columns for latitude and longitude inputs
+    col1, col2 = st.columns(2)
+    
+    # Input fields for coordinates
+    with col1:
+        latitude = st.number_input(
+            "Enter Latitude:",
+            min_value=-90.0,
+            max_value=90.0,
+            value=0.0,
+            step=0.0001,
+            format="%.4f"
+        )
+    
+    with col2:
+        longitude = st.number_input(
+            "Enter Longitude:",
+            min_value=-180.0,
+            max_value=180.0,
+            value=0.0,
+            step=0.0001,
+            format="%.4f"
+        )
+    
+    # Display the coordinates
+    st.write(f"Selected Location: {latitude}, {longitude}")
+    
+    # Create a map centered at the input coordinates
+    m = folium.Map(location=[latitude, longitude], zoom_start=10)
+    
+    # Add a marker at the specified coordinates
+    folium.Marker(
+        [latitude, longitude],
+        popup=f"Lat: {latitude}\nLon: {longitude}",
+        tooltip="Click for coordinates"
+    ).add_to(m)
+    
+    # Display the map
+    folium_static(m)
+    
+    # Add a link to open the location in Google Maps
+    google_maps_url = f"https://www.google.com/maps?q={latitude},{longitude}"
+    st.markdown(f"[Open in Google Maps]({google_maps_url})")
 
-# Streamlit sidebar for address input
-st.title("Google Maps with Streamlit and Folium")
-address = st.text_input("Enter an address:", "San Francisco, CA")
-
-# Initialize geolocator
-geolocator = Nominatim(user_agent="geoapiExercises")
-
-# Get coordinates for the entered address
-location = geolocator.geocode(address)
-
-if location:
-    latitude = location.latitude
-    longitude = location.longitude
-    st.write(f"Coordinates: Latitude = {latitude}, Longitude = {longitude}")
-
-    # Create and display the map
-    folium_map = create_map(latitude, longitude, address)
-    # Display the map in Streamlit
-    st.markdown(folium_map._repr_html_(), unsafe_allow_html=True)
-else:
-    st.write("Address not found.")
+if __name__ == "__main__":
+    main()
