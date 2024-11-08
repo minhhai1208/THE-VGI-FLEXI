@@ -1,6 +1,5 @@
 import streamlit as st
-import folium
-from streamlit_folium import st_folium
+import pandas as pd
 
 def main():
     st.title("📍 Coordinate Map Viewer")
@@ -14,7 +13,7 @@ def main():
             "Enter Latitude:",
             min_value=-90.0,
             max_value=90.0,
-            value=0.0,
+            value=40.7128,  # Default to New York City
             step=0.0001,
             format="%.4f"
         )
@@ -24,7 +23,7 @@ def main():
             "Enter Longitude:",
             min_value=-180.0,
             max_value=180.0,
-            value=0.0,
+            value=-74.0060,  # Default to New York City
             step=0.0001,
             format="%.4f"
         )
@@ -32,19 +31,14 @@ def main():
     # Display the coordinates
     st.write(f"Selected Location: {latitude}, {longitude}")
     
-    # Create a map centered at the input coordinates
-    m = folium.Map(location=[latitude, longitude], zoom_start=10)
-    
-    # Add a marker at the specified coordinates
-    folium.Marker(
-        [latitude, longitude],
-        popup=f"Lat: {latitude}\nLon: {longitude}",
-        tooltip="Click for coordinates"
-    ).add_to(m)
+    # Create a dataframe with the coordinates
+    df = pd.DataFrame({
+        'lat': [latitude],
+        'lon': [longitude]
+    })
     
     # Display the map
-    
-    st_folium(m, width=700, height=500)
+    st.map(df)
     
     # Add a link to open the location in Google Maps
     google_maps_url = f"https://www.google.com/maps?q={latitude},{longitude}"
