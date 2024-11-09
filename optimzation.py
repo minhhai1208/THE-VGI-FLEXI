@@ -1,4 +1,5 @@
 from pulp import *
+import pandas as pd
 
 def create_transportation_model(starts, destinations, demands_from_begin):
     # Constants
@@ -46,12 +47,30 @@ def solve_and_print_results(starts, destinations, demands):
     model.solve()
     
     # Print results
-    print(f"Status: {LpStatus[model.status]}")
-    print(f"Optimal total number of buses: {value(model.objective)}")
-    print("\nDetailed Results:")
+    
+    bus_needed = value(model.objective)
+    keys = ['Start', 'Destination', 'Busses_nedded', 'Demand']
+
+    # Create a dictionary with empty values (None)
+    routes = dict.fromkeys(keys, None)
+    start_points = []
+    destinations_points = []
+    values  =[]
+    demandss = []
     for i in starts:
         for j in destinations:
             val = value(units[i,j])
             if val > 0:  # Only print non-zero allocations
-                print(f"Route {i}->{j}: {val} buses (Demand: {demands[i,j]})")
-
+                start_points.append(i)
+                destinations_points.append(j)
+                values.append(val)
+                demandss.append(demands[i,j])
+                print("hello")
+    
+    print(starts)
+    routes["Start"] = start_points
+    routes["Destination"] = destinations_points
+    routes["Busses_nedded"] = values
+    routes["Demand"] = demandss
+    routes = pd.DataFrame(routes)
+    return bus_needed, routes
